@@ -61,6 +61,14 @@ mp_new(void)
     return z;
 }
 
+MPNumber
+mp_new_from_integer(int64_t x)
+{
+    MPNumber z;
+    mpc_init2(z.num, PRECISION);
+    mpc_set_si(z.num, x, MPC_RNDNN);
+    return z;
+}
 
 MPNumber *
 mp_new_ptr(void)
