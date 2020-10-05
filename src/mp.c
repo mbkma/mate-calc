@@ -61,6 +61,14 @@ mp_new(void)
     return z;
 }
 
+MPNumber
+mp_new_from_integer(uint64_t x)
+{
+    MPNumber z;
+    mpc_init2(z.num, PRECISION);
+    mpc_set_si(z.num, x, MPC_RNDNN);
+    return z;
+}
 
 MPNumber *
 mp_new_ptr(void)
@@ -70,14 +78,12 @@ mp_new_ptr(void)
     return z;
 }
 
-
 void
 mp_clear(MPNumber *z)
 {
     if (z != NULL)
         mpc_clear(z->num);
 }
-
 
 void
 mp_free(MPNumber *z)
@@ -89,7 +95,6 @@ mp_free(MPNumber *z)
     }
 }
 
-
 void
 mp_get_eulers(MPNumber *z)
 {
@@ -99,13 +104,11 @@ mp_get_eulers(MPNumber *z)
     mpfr_set_zero(mpc_imagref(z->num), 0);
 }
 
-
 void
 mp_get_i(MPNumber *z)
 {
     mpc_set_si_si(z->num, 0, 1, MPC_RNDNN);
 }
-
 
 void
 mp_abs(const MPNumber *x, MPNumber *z)
@@ -113,7 +116,6 @@ mp_abs(const MPNumber *x, MPNumber *z)
     mpfr_set_zero(mpc_imagref(z->num), MPFR_RNDN);
     mpc_abs(mpc_realref(z->num), x->num, MPC_RNDNN);
 }
-
 
 void
 mp_arg(const MPNumber *x, MPAngleUnit unit, MPNumber *z)
@@ -136,20 +138,17 @@ mp_arg(const MPNumber *x, MPAngleUnit unit, MPNumber *z)
         mpfr_abs(mpc_realref(z->num), mpc_realref(z->num), MPFR_RNDN);
 }
 
-
 void
 mp_conjugate(const MPNumber *x, MPNumber *z)
 {
     mpc_conj(z->num, x->num, MPC_RNDNN);
 }
 
-
 void
 mp_real_component(const MPNumber *x, MPNumber *z)
 {
     mpc_set_fr(z->num, mpc_realref(x->num), MPC_RNDNN);
 }
-
 
 void
 mp_imaginary_component(const MPNumber *x, MPNumber *z)
@@ -162,7 +161,6 @@ mp_add(const MPNumber *x, const MPNumber *y, MPNumber *z)
 {
     mpc_add(z->num, x->num, y->num, MPC_RNDNN);
 }
-
 
 void
 mp_add_integer(const MPNumber *x, int64_t y, MPNumber *z)
@@ -196,7 +194,6 @@ mp_fractional_component(const MPNumber *x, MPNumber *z)
     mpfr_frac(mpc_realref(z->num), mpc_realref(x->num), MPFR_RNDN);
 }
 
-
 void
 mp_fractional_part(const MPNumber *x, MPNumber *z)
 {
@@ -206,7 +203,6 @@ mp_fractional_part(const MPNumber *x, MPNumber *z)
     mp_clear(&f);
 }
 
-
 void
 mp_floor(const MPNumber *x, MPNumber *z)
 {
@@ -214,14 +210,12 @@ mp_floor(const MPNumber *x, MPNumber *z)
     mpfr_floor(mpc_realref(z->num), mpc_realref(x->num));
 }
 
-
 void
 mp_ceiling(const MPNumber *x, MPNumber *z)
 {
     mpfr_set_zero(mpc_imagref(z->num), MPFR_RNDN);
     mpfr_ceil(mpc_realref(z->num), mpc_realref(x->num));
 }
-
 
 void
 mp_round(const MPNumber *x, MPNumber *z)
@@ -268,7 +262,6 @@ mp_is_integer(const MPNumber *x)
     return mpfr_integer_p(mpc_realref(x->num)) != 0;
 }
 
-
 bool
 mp_is_positive_integer(const MPNumber *x)
 {
@@ -277,7 +270,6 @@ mp_is_positive_integer(const MPNumber *x)
     else
         return mpfr_sgn(mpc_realref(x->num)) >= 0 && mp_is_integer(x);
 }
-
 
 bool
 mp_is_natural(const MPNumber *x)
@@ -288,13 +280,11 @@ mp_is_natural(const MPNumber *x)
         return mpfr_sgn(mpc_realref(x->num)) > 0 && mp_is_integer(x);
 }
 
-
 bool
 mp_is_complex(const MPNumber *x)
 {
     return !mpfr_zero_p(mpc_imagref(x->num));
 }
-
 
 bool
 mp_is_equal(const MPNumber *x, const MPNumber *y)
@@ -302,7 +292,6 @@ mp_is_equal(const MPNumber *x, const MPNumber *y)
     int res = mpc_cmp(x->num, y->num);
     return MPC_INEX_RE(res) == 0 && MPC_INEX_IM(res) == 0;
 }
-
 
 void
 mp_epowy(const MPNumber *x, MPNumber *z)
@@ -323,20 +312,17 @@ mp_is_negative(const MPNumber *x)
     return mpfr_sgn(mpc_realref(x->num)) < 0;
 }
 
-
 bool
 mp_is_greater_equal(const MPNumber *x, const MPNumber *y)
 {
     return mp_compare(x, y) >= 0;
 }
 
-
 bool
 mp_is_greater_than(const MPNumber *x, const MPNumber *y)
 {
     return mp_compare(x, y) > 0;
 }
-
 
 bool
 mp_is_less_equal(const MPNumber *x, const MPNumber *y)
@@ -378,7 +364,6 @@ mp_ln(const MPNumber *x, MPNumber *z)
         mpfr_abs(mpc_imagref(z->num), mpc_imagref(z->num), MPFR_RNDN);
 }
 
-
 void
 mp_logarithm(int64_t n, const MPNumber *x, MPNumber *z)
 {
@@ -406,20 +391,17 @@ mp_multiply(const MPNumber *x, const MPNumber *y, MPNumber *z)
     mpc_mul(z->num, x->num, y->num, MPC_RNDNN);
 }
 
-
 void
 mp_multiply_integer(const MPNumber *x, int64_t y, MPNumber *z)
 {
     mpc_mul_si(z->num, x->num, (long) y, MPC_RNDNN);
 }
 
-
 void
 mp_invert_sign(const MPNumber *x, MPNumber *z)
 {
     mpc_neg(z->num, x->num, MPC_RNDNN);
 }
-
 
 void
 mp_reciprocal(const MPNumber *x, MPNumber *z)
@@ -469,13 +451,11 @@ mp_root(const MPNumber *x, int64_t n, MPNumber *z)
     }
 }
 
-
 void
 mp_sqrt(const MPNumber *x, MPNumber *z)
 {
     mp_root(x, 2, z);
 }
-
 
 void
 mp_factorial(const MPNumber *x, MPNumber *z)
@@ -516,7 +496,6 @@ mp_factorial(const MPNumber *x, MPNumber *z)
     }
 }
 
-
 void
 mp_modulus_divide(const MPNumber *x, const MPNumber *y, MPNumber *z)
 {
@@ -543,7 +522,6 @@ mp_modulus_divide(const MPNumber *x, const MPNumber *y, MPNumber *z)
     mp_clear(&t1);
     mp_clear(&t2);
 }
-
 
 void
 mp_modular_exponentiation(const MPNumber *x, const MPNumber *y, const MPNumber *p, MPNumber *z)
@@ -588,7 +566,6 @@ mp_modular_exponentiation(const MPNumber *x, const MPNumber *y, const MPNumber *
     mp_clear(&tmp);
 }
 
-
 void
 mp_xpowy(const MPNumber *x, const MPNumber *y, MPNumber *z)
 {
@@ -615,7 +592,6 @@ mp_xpowy(const MPNumber *x, const MPNumber *y, MPNumber *z)
 
     mpc_pow(z->num, x->num, y->num, MPC_RNDNN);
 }
-
 
 void
 mp_xpowy_integer(const MPNumber *x, int64_t n, MPNumber *z)
@@ -663,6 +639,80 @@ mp_zeta(const MPNumber *x, MPNumber *z)
     mpfr_zeta(mpc_realref(z->num), mpc_realref(x->num), MPFR_RNDN);
 
     mp_clear(&one);
+}
+
+/**
+ * is_strong_pseudoprime:
+ * @z: The MPNumber to test primality
+ * @rounds: The number of rounds in the Miller-Rabin test
+ *
+ * Performs Miller-Rabin tests to bases 2,3,...,@rounds.
+ * @z has to be odd.
+ * @rounds has to be 2 <= @rounds <= @z.
+ *
+ * Returns: TRUE if @z is strong-pseudoprime, FALSE otherwise.
+ */
+static bool
+is_strong_pseudoprime(MPNumber *z, uint64_t rounds)
+{
+    MPNumber tmp = mp_new();
+    MPNumber two = mp_new_from_integer(2);
+    uint64_t l = 0;
+    bool is_prime = TRUE;
+
+    /* Write n := z-1 = 2^l * q with q odd */
+    MPNumber q = mp_new();
+    MPNumber n = mp_new();
+    mp_add_integer(z, -1, &n);
+    mp_set_from_mp(&n, &q);
+    do
+    {
+        mp_divide_integer(&q, 2, &q);
+        mp_modulus_divide(&q, &two, &tmp);
+        l++;
+    } while (mp_is_zero(&tmp));
+
+    /* Miller-Rabin tests to base a = 2,3,...,@rounds */
+    MPNumber one = mp_new_from_integer(1);
+    MPNumber a = mp_new_from_integer(1);
+    MPNumber b = mp_new();
+
+    for (uint64_t i = 1; i <= rounds; i++)
+    {
+        mp_add_integer(&a, 1, &a);
+        mp_modular_exponentiation(&a, &q, z, &b);
+        if (mp_compare(&one, &b) == 0 || mp_compare(&n, &b) == 0)
+        {
+            continue;
+        }
+
+        bool is_witness = FALSE;
+        for (int j = 1; j < l; j++)
+        {
+            mp_modular_exponentiation(&b, &two, z, &b);
+            if (mp_compare(&b, &n) == 0)
+            {
+                is_witness = TRUE;
+                break;
+            }
+        }
+
+        if (!is_witness)
+        {
+            is_prime = FALSE;
+            break;
+        }
+    }
+
+    mp_clear(&n);
+    mp_clear(&q);
+    mp_clear(&a);
+    mp_clear(&b);
+    mp_clear(&one);
+    mp_clear(&two);
+    mp_clear(&tmp);
+
+    return is_prime;
 }
 
 GList*
@@ -726,6 +776,16 @@ mp_factorize(const MPNumber *x)
         }
         else
             break;
+    }
+
+    /* Now @value is odd, hence test primality */
+    if (is_strong_pseudoprime(&value, 50))
+    {
+        mp_set_from_mp(x, factor);
+        list = g_list_append(list, factor);
+        mp_clear(&value);
+        mp_clear(&tmp);
+        return list;
     }
 
     MPNumber root = mp_new();
