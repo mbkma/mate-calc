@@ -439,11 +439,14 @@ static GtkWidget *add_menu(GtkWidget *menu_bar, const gchar *name)
     return menu;
 }
 
+/* Recieves signal emitted by a MathEquation object for updating history */
 static void
 update_history_cb (MathEquation *equation, char *answer, MPNumber *number, int number_base, gpointer data)
-{   /* Recieves signal emitted by a MathEquation object for updating history */
+{
     MathWindow *window = MATH_WINDOW(data);
-    math_history_insert_entry (window->priv->history, answer, number, number_base); /* Sends current equation and answer for updating History-View */
+
+    /* Sends current equation and answer for updating History-View */
+    math_history_insert_entry (window->priv->history, answer, number, number_base);
 }
 
 static void quit_cb(GtkWidget* widget, MathWindow* window)
