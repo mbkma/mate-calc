@@ -14,8 +14,11 @@
 #include <stdint.h>
 #include <math.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include "mp.h"
+
+#define DEBUG 1
 
 char *mp_error = NULL;
 
@@ -641,19 +644,17 @@ mp_zeta(const MPNumber *x, MPNumber *z)
     mp_clear(&one);
 }
 
+/***********************************************************************/
+/**                          FACTORIZATION                            **/
+/***********************************************************************/
+
+
 /**
- * is_strong_pseudoprime:
- * @z: The MPNumber to test primality
- * @rounds: The number of rounds in the Miller-Rabin test
+ *  Assumes @z is odd and @rounds < @z.
  *
- * Performs Miller-Rabin tests to bases 2,3,...,@rounds.
- * @z has to be odd.
- * @rounds has to be 2 <= @rounds <= @z.
- *
- * Returns: TRUE if @z is strong-pseudoprime, FALSE otherwise.
  */
 static bool
-is_strong_pseudoprime(MPNumber *z, uint64_t rounds)
+mp_is_pprime(MPNumber *z, uint64_t rounds)
 {
     MPNumber tmp = mp_new();
     MPNumber two = mp_new_from_integer(2);
@@ -672,12 +673,12 @@ is_strong_pseudoprime(MPNumber *z, uint64_t rounds)
         l++;
     } while (mp_is_zero(&tmp));
 
-    /* Miller-Rabin tests to base a = 2,3,...,@rounds */
+    /* @rounds Miller-Rabin tests to bases a = 2,3,...,@rounds+1 */
     MPNumber one = mp_new_from_integer(1);
     MPNumber a = mp_new_from_integer(1);
     MPNumber b = mp_new();
 
-    for (uint64_t i = 1; i <= rounds; i++)
+    for (uint64_t i = 1; (i < mp_to_integer(&n)) && (i <= rounds+1); i++)
     {
         mp_add_integer(&a, 1, &a);
         mp_modular_exponentiation(&a, &q, z, &b);
@@ -687,7 +688,7 @@ is_strong_pseudoprime(MPNumber *z, uint64_t rounds)
         }
 
         bool is_witness = FALSE;
-        for (int j = 1; j < l; j++)
+        for (int i = 1; i < l; i++)
         {
             mp_modular_exponentiation(&b, &two, z, &b);
             if (mp_compare(&b, &n) == 0)
@@ -713,6 +714,149 @@ is_strong_pseudoprime(MPNumber *z, uint64_t rounds)
     mp_clear(&tmp);
 
     return is_prime;
+}
+
+static void
+mp_gcd (const MPNumber *a, const MPNumber *b, MPNumber *z)
+{
+    MPNumber null = mp_new_from_integer(0);
+    MPNumber t1 = mp_new();
+    MPNumber t2 = mp_new();
+
+    mp_set_from_mp(a, z);
+    mp_set_from_mp(b, &t2);
+
+    while (mp_compare(&t2, &null) != 0)
+    {
+        mp_set_from_mp(&t2, &t1);
+        mp_modulus_divide(z, &t2, &t2);
+        mp_set_from_mp(&t1, z);
+    }
+
+    mp_clear(&null);
+    mp_clear(&t1);
+    mp_clear(&t2);
+}
+
+/**
+ * Searches a divisor of n.
+ *
+ * On success it return TRUE and stores the divisor in z. Returns FALSE otherwise.
+ */
+static bool
+mp_pollard_rho (const MPNumber *n, uint64_t i, MPNumber *z)
+{
+    MPNumber one = mp_new_from_integer(1);
+    MPNumber two = mp_new_from_integer(2);
+    MPNumber x = mp_new_from_integer(i);
+    MPNumber y = mp_new_from_integer(2);
+    MPNumber d = mp_new_from_integer(1);
+
+    #ifdef DEBUG
+    printf(" searching");
+    fflush(stdout);
+    #endif
+    int k = 0;
+    while (mp_compare(&d, &one) == 0)
+    {
+        mp_modular_exponentiation(&x, &two, n, &x);
+        mp_add(&x, &one, &x);
+
+        mp_modular_exponentiation(&y, &two, n, &y);
+        mp_add(&y, &one, &y);
+
+        mp_modular_exponentiation(&y, &two, n, &y);
+        mp_add(&y, &one, &y);
+
+        mp_subtract(&x, &y,z);
+        mp_abs(z, z);
+        mp_gcd(z, n, &d);
+
+        #ifdef DEBUG
+        if (k++ % 10000 == 0)
+        {
+            printf(".");
+            fflush(stdout);
+        }
+        #endif
+    }
+
+    if (mp_compare(&d, n) == 0)
+    {
+        mp_clear(&one);
+        mp_clear(&two);
+        mp_clear(&x);
+        mp_clear(&y);
+        mp_clear(&d);
+
+        return FALSE;
+    }
+    else
+    {
+        mp_set_from_mp(&d, z);
+
+        mp_clear(&one);
+        mp_clear(&two);
+        mp_clear(&x);
+        mp_clear(&y);
+        mp_clear(&d);
+
+        return TRUE;
+    }
+}
+
+static void
+find_big_prime_factor (const MPNumber *n, MPNumber *z)
+{
+    MPNumber tmp = mp_new();
+    uint64_t i = 2;
+
+    while (TRUE)
+    {
+        while (mp_pollard_rho (n, i, &tmp) == FALSE)
+        {
+            printf("\n pollard_rho i: %d\n", i);
+            i++;
+        }
+
+        #ifdef DEBUG
+        printf(" found: ");
+        mpfr_out_str(stdout, 10, 5, mpc_realref(tmp.num), MPFR_RNDN);
+        printf("\n");
+        #endif
+
+        if (!mp_is_pprime(&tmp, 50))
+        {
+            #ifdef DEBUG
+            printf("Pollard-Rho didn't return prime factor!\n");
+            #endif
+            mp_divide(n, &tmp, &tmp);
+        }
+        else
+            break;
+    }
+
+    mp_set_from_mp(&tmp, z);
+    mp_clear(&tmp);
+}
+
+/**
+ * Assumes z is odd.
+ * Deterministic if return value < 341,550,071,728,321
+ *
+ * Sets z to the next prime after z.
+ */
+static void
+mp_next_prime (MPNumber *z)
+{
+    MPNumber two = mp_new_from_integer(2);
+
+    do
+    {
+        mp_add(z, &two, z);
+    } while (!mp_is_pprime(z, 17));
+
+    mp_clear(&two);
 }
 
 GList*
@@ -761,15 +905,22 @@ mp_factorize(const MPNumber *x)
         return list;
     }
 
-    MPNumber divisor = mp_new();
-    mp_set_from_integer(2, &divisor);
+    #ifdef DEBUG
+    printf("# Trial Division # \n");
+    #endif
+    MPNumber prime = mp_new_from_integer(2);
     while (TRUE)
     {
-        mp_divide(&value, &divisor, &tmp);
+        mp_divide(&value, &prime, &tmp);
         if (mp_is_integer(&tmp))
         {
             mp_set_from_mp(&tmp, &value);
-            mp_set_from_mp(&divisor, factor);
+            mp_set_from_mp(&prime, factor);
+            #ifdef DEBUG
+            printf(" found: ");
+            mpfr_out_str(stdout, 10, 5, mpc_realref(prime.num), MPFR_RNDN);
+            printf("\n");
+            #endif
             list = g_list_append(list, factor);
             factor = g_slice_alloc0(sizeof(MPNumber));
             mpc_init2(factor->num, PRECISION);
@@ -778,37 +929,58 @@ mp_factorize(const MPNumber *x)
             break;
     }
 
-    /* Now @value is odd, hence test primality */
-    if (is_strong_pseudoprime(&value, 50))
-    {
-        mp_set_from_mp(x, factor);
-        list = g_list_append(list, factor);
-        mp_clear(&value);
-        mp_clear(&tmp);
-        return list;
-    }
+    mp_set_from_integer(3, &prime);
 
     MPNumber root = mp_new();
-    mp_set_from_integer(3, &divisor);
     mp_sqrt(&value, &root);
-    while (mp_is_less_equal(&divisor, &root))
+    ulong max_trial_division = (ulong) (1 << 12);
+    ulong iter = 0;
+    while (mp_is_less_equal(&prime, &root) && (++iter < max_trial_division))
     {
-        mp_divide(&value, &divisor, &tmp);
+        mp_divide(&value, &prime, &tmp);
         if (mp_is_integer(&tmp))
         {
             mp_set_from_mp(&tmp, &value);
             mp_sqrt(&value, &root);
-            mp_set_from_mp(&divisor, factor);
+            mp_set_from_mp(&prime, factor);
+            #ifdef DEBUG
+            printf(" found: ");
+            mpfr_out_str(stdout, 10, 5, mpc_realref(prime.num), MPFR_RNDN);
+            printf("\n");
+            #endif
             list = g_list_append(list, factor);
             factor = g_slice_alloc0(sizeof(MPNumber));
             mpc_init2(factor->num, PRECISION);
         }
         else
         {
-            mp_add_integer(&divisor, 2, &tmp);
-            mp_set_from_mp(&tmp, &divisor);
+            mp_next_prime(&prime);
         }
     }
+    #ifdef DEBUG
+    printf("# Pollard Rho # \n");
+    #endif
+    while (!mp_is_pprime(&value, 50))
+    {
+        find_big_prime_factor (&value, &prime);
+
+        mp_divide(&value, &prime, &tmp);
+        if (mp_is_integer(&tmp))
+        {
+            mp_set_from_mp(&tmp, &value);
+            mp_sqrt(&value, &root);
+            mp_set_from_mp(&prime, factor);
+            list = g_list_append(list, factor);
+            factor = g_slice_alloc0(sizeof(MPNumber));
+            mpc_init2(factor->num, PRECISION);
+        }
+    }
+
+    #ifdef DEBUG
+    printf(" searching found: ");
+    mpfr_out_str(stdout, 10, 5, mpc_realref(value.num), MPFR_RNDN);
+    printf("\n");
+    #endif
 
     mp_set_from_integer(1, &tmp);
     if (mp_is_greater_than(&value, &tmp))
@@ -825,10 +997,9 @@ mp_factorize(const MPNumber *x)
     if (mp_is_negative(x))
         mp_invert_sign(list->data, list->data);
 
-    /* MPNumbers in GList will be freed in math_equation_factorize_real */
     mp_clear(&value);
     mp_clear(&tmp);
-    mp_clear(&divisor);
+    mp_clear(&prime);
     mp_clear(&root);
 
     return list;
