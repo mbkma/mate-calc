@@ -1,0 +1,40 @@
+\hypertarget{structMPEquationOptions}{}\doxysection{MPEquation\+Options Struct Reference}
+\label{structMPEquationOptions}\index{MPEquationOptions@{MPEquationOptions}}
+\doxysubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structMPEquationOptions_a2048b747c73b02dbb32fe8315dc62f9b}\label{structMPEquationOptions_a2048b747c73b02dbb32fe8315dc62f9b}} 
+int {\bfseries base}
+\item 
+\mbox{\Hypertarget{structMPEquationOptions_a1bfd1560772658c7edfcfe0d955c1ace}\label{structMPEquationOptions_a1bfd1560772658c7edfcfe0d955c1ace}} 
+int {\bfseries wordlen}
+\item 
+\mbox{\Hypertarget{structMPEquationOptions_a1d6f85def0fa55aefe2f244d1c865a78}\label{structMPEquationOptions_a1d6f85def0fa55aefe2f244d1c865a78}} 
+MPAngle\+Unit {\bfseries angle\+\_\+units}
+\item 
+\mbox{\Hypertarget{structMPEquationOptions_a98d15ddfcedb172a64d7d078ca85cddd}\label{structMPEquationOptions_a98d15ddfcedb172a64d7d078ca85cddd}} 
+void $\ast$ {\bfseries callback\+\_\+data}
+\item 
+\mbox{\Hypertarget{structMPEquationOptions_abce69af38be7d78c49ac1dc6250fa8c8}\label{structMPEquationOptions_abce69af38be7d78c49ac1dc6250fa8c8}} 
+int($\ast$ {\bfseries variable\+\_\+is\+\_\+defined} )(const char $\ast$name, void $\ast$data)
+\item 
+\mbox{\Hypertarget{structMPEquationOptions_af525db3efced687833c5176c6104352f}\label{structMPEquationOptions_af525db3efced687833c5176c6104352f}} 
+int($\ast$ {\bfseries get\+\_\+variable} )(const char $\ast$name, \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$z, void $\ast$data)
+\item 
+\mbox{\Hypertarget{structMPEquationOptions_a6cc76c22e4251711d981bb2f2c3df8aa}\label{structMPEquationOptions_a6cc76c22e4251711d981bb2f2c3df8aa}} 
+void($\ast$ {\bfseries set\+\_\+variable} )(const char $\ast$name, const \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$x, void $\ast$data)
+\item 
+\mbox{\Hypertarget{structMPEquationOptions_a1034b401dc9c9d62ebebf962cade2c2f}\label{structMPEquationOptions_a1034b401dc9c9d62ebebf962cade2c2f}} 
+int($\ast$ {\bfseries function\+\_\+is\+\_\+defined} )(const char $\ast$name, void $\ast$data)
+\item 
+\mbox{\Hypertarget{structMPEquationOptions_a7fa94278135e2d70b38e35a04c540bc5}\label{structMPEquationOptions_a7fa94278135e2d70b38e35a04c540bc5}} 
+int($\ast$ {\bfseries get\+\_\+function} )(const char $\ast$name, const \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$x, \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$z, void $\ast$data)
+\item 
+\mbox{\Hypertarget{structMPEquationOptions_add376ac0fd0723cdf566b41b7a10e04a}\label{structMPEquationOptions_add376ac0fd0723cdf566b41b7a10e04a}} 
+int($\ast$ {\bfseries convert} )(const \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$x, const char $\ast$x\+\_\+units, const char $\ast$z\+\_\+units, \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$z, void $\ast$data)
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/mp-\/equation.\+h\end{DoxyCompactItemize}

@@ -1,0 +1,52 @@
+\hypertarget{structparser__state}{}\doxysection{parser\+\_\+state Struct Reference}
+\label{structparser__state}\index{parser\_state@{parser\_state}}
+\doxysubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structparser__state_a7bd98e56cb559993a37804f57f3a1395}\label{structparser__state_a7bd98e56cb559993a37804f57f3a1395}} 
+\mbox{\hyperlink{structparse__node}{Parse\+Node}} $\ast$ {\bfseries root}
+\item 
+\mbox{\Hypertarget{structparser__state_a927ee5fc10947bc33e7d56bdb260f364}\label{structparser__state_a927ee5fc10947bc33e7d56bdb260f364}} 
+\mbox{\hyperlink{structparse__node}{Parse\+Node}} $\ast$ {\bfseries right\+\_\+most}
+\item 
+\mbox{\Hypertarget{structparser__state_ae7378829d2bc288d08114370242727da}\label{structparser__state_ae7378829d2bc288d08114370242727da}} 
+\mbox{\hyperlink{structLexerState}{Lexer\+State}} $\ast$ {\bfseries lexer}
+\item 
+\mbox{\Hypertarget{structparser__state_a0895443a1813b01954ca039f6d97d2b2}\label{structparser__state_a0895443a1813b01954ca039f6d97d2b2}} 
+guint {\bfseries depth\+\_\+level}
+\item 
+\mbox{\Hypertarget{structparser__state_a59a3c6e99f631cf4f5c4b09b0ccbe303}\label{structparser__state_a59a3c6e99f631cf4f5c4b09b0ccbe303}} 
+\mbox{\hyperlink{structMPEquationOptions}{MPEquation\+Options}} $\ast$ {\bfseries options}
+\item 
+\mbox{\Hypertarget{structparser__state_ab9b481fcb98e4d31c49ed14b2884ce48}\label{structparser__state_ab9b481fcb98e4d31c49ed14b2884ce48}} 
+int {\bfseries error}
+\item 
+\mbox{\Hypertarget{structparser__state_aa4d458c82d49771e3f8ccdd656305ce5}\label{structparser__state_aa4d458c82d49771e3f8ccdd656305ce5}} 
+char $\ast$ {\bfseries error\+\_\+token}
+\item 
+\mbox{\Hypertarget{structparser__state_ad9aac2a668cfd36fe754daaa335f9fd4}\label{structparser__state_ad9aac2a668cfd36fe754daaa335f9fd4}} 
+\mbox{\hyperlink{structMPNumber}{MPNumber}} {\bfseries ret}
+\item 
+\mbox{\Hypertarget{structparser__state_a684b7121c4791531eec0a33469f3e098}\label{structparser__state_a684b7121c4791531eec0a33469f3e098}} 
+int($\ast$ {\bfseries variable\+\_\+is\+\_\+defined} )(struct \mbox{\hyperlink{structparser__state}{parser\+\_\+state}} $\ast$state, const char $\ast$name)
+\item 
+\mbox{\Hypertarget{structparser__state_a3a9c8c3b1946ddc8c6c9842cb1981f40}\label{structparser__state_a3a9c8c3b1946ddc8c6c9842cb1981f40}} 
+int($\ast$ {\bfseries get\+\_\+variable} )(struct \mbox{\hyperlink{structparser__state}{parser\+\_\+state}} $\ast$state, const char $\ast$name, \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$z)
+\item 
+\mbox{\Hypertarget{structparser__state_a3768b5d3ebaec1513ab00b69335f8e10}\label{structparser__state_a3768b5d3ebaec1513ab00b69335f8e10}} 
+void($\ast$ {\bfseries set\+\_\+variable} )(struct \mbox{\hyperlink{structparser__state}{parser\+\_\+state}} $\ast$state, const char $\ast$name, const \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$x)
+\item 
+\mbox{\Hypertarget{structparser__state_ac3eea4b5831f27cdfd8a09b90f4500f6}\label{structparser__state_ac3eea4b5831f27cdfd8a09b90f4500f6}} 
+int($\ast$ {\bfseries function\+\_\+is\+\_\+defined} )(struct \mbox{\hyperlink{structparser__state}{parser\+\_\+state}} $\ast$state, const char $\ast$name)
+\item 
+\mbox{\Hypertarget{structparser__state_a02acfdd8e314b0589b1300556a0dc4fc}\label{structparser__state_a02acfdd8e314b0589b1300556a0dc4fc}} 
+int($\ast$ {\bfseries get\+\_\+function} )(struct \mbox{\hyperlink{structparser__state}{parser\+\_\+state}} $\ast$state, const char $\ast$name, const \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$x, \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$z)
+\item 
+\mbox{\Hypertarget{structparser__state_abc95f345dfbc49d1c744d53721ca1ca5}\label{structparser__state_abc95f345dfbc49d1c744d53721ca1ca5}} 
+int($\ast$ {\bfseries convert} )(struct \mbox{\hyperlink{structparser__state}{parser\+\_\+state}} $\ast$state, const \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$x, const char $\ast$x\+\_\+units, const char $\ast$z\+\_\+units, \mbox{\hyperlink{structMPNumber}{MPNumber}} $\ast$z)
+\end{DoxyCompactItemize}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+src/parser.\+h\end{DoxyCompactItemize}
